@@ -7,7 +7,7 @@ export function useGameProgress() {
   const total = 4
   const percent = Math.round((completeCount / total) * 100)
 
-  const markComplete = (mission: 1 | 2 | 3) => {
+  const markComplete = (mission: 1 | 2 | 3 | 4) => {
     setProgress((p) => ({ ...p, [`mission${mission}`]: true } as typeof p))
   }
 

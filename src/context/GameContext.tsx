@@ -4,6 +4,7 @@ type Progress = {
   mission1: boolean
   mission2: boolean
   mission3: boolean
+  mission4: boolean
 }
 
 type GameContextValue = {
@@ -18,11 +19,11 @@ const GameContext = createContext<GameContextValue | undefined>(undefined)
 
 export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [score, setScore] = useState(0)
-  const [progress, setProgress] = useState<Progress>({ mission1: false, mission2: false, mission3: false })
+  const [progress, setProgress] = useState<Progress>({ mission1: false, mission2: false, mission3: false, mission4: false })
 
   const reset = () => {
     setScore(0)
-    setProgress({ mission1: false, mission2: false, mission3: false })
+    setProgress({ mission1: false, mission2: false, mission3: false, mission4: false })
   }
 
   const value = useMemo(() => ({ score, setScore, progress, setProgress, reset }), [score, progress])
@@ -34,4 +35,3 @@ export const useGame = () => {
   if (!ctx) throw new Error('useGame must be used within GameProvider')
   return ctx
 }
-

@@ -13,7 +13,7 @@ export function useSocket() {
   const [leaderboard, setLeaderboard] = useState<Leader[]>([])
   const { setScore, setProgress } = useGame()
 
-  const url = (import.meta.env.VITE_WS_URL as string) || undefined
+  const url = import.meta.env.VITE_WS_URL || undefined
 
   useEffect(() => {
     if (!session) return
@@ -30,7 +30,7 @@ export function useSocket() {
     s.on('leaderboard_update', ({ leaderboard: lb }: { leaderboard: Leader[] }) => setLeaderboard(lb))
     s.on('team_update', ({ score, currentMission }: { score: number; currentMission: number }) => {
       setScore(score)
-      setProgress({ mission1: currentMission >= 1, mission2: currentMission >= 2, mission3: currentMission >= 3 })
+      setProgress({ mission1: currentMission >= 1, mission2: currentMission >= 2, mission3: currentMission >= 3, mission4: currentMission >= 4 })
     })
     s.on('endgame', () => setGameState((g) => (g ? { ...g, status: 'ended' } : { status: 'ended' })))
     return () => {
@@ -41,4 +41,3 @@ export function useSocket() {
 
   return useMemo(() => ({ socket, gameState, leaderboard }), [socket, gameState, leaderboard])
 }
-

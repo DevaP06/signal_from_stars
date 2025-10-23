@@ -3,9 +3,9 @@ export type PuzzleResponse = { missionId: number; question: any; hint?: string; 
 export type AnswerResponse = { correct: boolean; scoreDelta: number; newScore: number; nextMissionUnlocked: boolean }
 export type LeaderboardEntry = { _id?: string; name: string; score: number; currentMission: number; finishedAt?: string }
 
-const BASE = import.meta.env.VITE_API_URL || ''
+const BASE: string = import.meta.env.VITE_API_URL || ''
 
-function authHeaders(token?: string) {
+function authHeaders(token?: string): Record<string, string> {
   return token ? { Authorization: `Bearer ${token}` } : {}
 }
 
@@ -20,7 +20,7 @@ export async function apiJoin(teamName: string): Promise<JoinResponse> {
 }
 
 export async function apiGetPuzzle(token: string, mission: number): Promise<PuzzleResponse> {
-  const res = await fetch(`${BASE}/api/puzzle/${mission}`, { headers: { ...authHeaders(token) } })
+  const res = await fetch(`${BASE}/api/puzzle/${mission}`, { headers: { ...authHeaders(token) } as HeadersInit })
   if (!res.ok) throw new Error('Puzzle fetch failed')
   return res.json()
 }
@@ -28,7 +28,7 @@ export async function apiGetPuzzle(token: string, mission: number): Promise<Puzz
 export async function apiSubmitAnswer(token: string, mission: number, answer: string): Promise<AnswerResponse> {
   const res = await fetch(`${BASE}/api/answer/${mission}`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...authHeaders(token) },
+    headers: { 'Content-Type': 'application/json', ...authHeaders(token) } as HeadersInit,
     body: JSON.stringify({ answer }),
   })
   if (!res.ok) throw new Error('Answer submit failed')
@@ -40,4 +40,3 @@ export async function apiLeaderboard(): Promise<{ leaderboard: LeaderboardEntry[
   if (!res.ok) throw new Error('Leaderboard fetch failed')
   return res.json()
 }
-
