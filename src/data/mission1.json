@@ -1,0 +1,13 @@
+{
+  "missionId": 1,
+  "title": "Identify the Source",
+  "description": "NASA intercepted a distorted starfield image. Can you identify the constellation?",
+  "hints": [
+    "This constellation is named after a hunter.",
+    "One of its brightest stars is 642 light-years away."
+  ],
+  "question": "Which constellation and star does the signal refer to?",
+  "expectedAnswer": "Orion - Betelgeuse",
+  "points": 20
+}
+

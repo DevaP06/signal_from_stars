@@ -1,0 +1,8 @@
+{
+  "id": "sample",
+  "title": "The First Signal",
+  "prompt": "01001000 01100101 01101100 01101100 01101111",
+  "hint": "Binary to ASCII",
+  "answer": "hello"
+}
+

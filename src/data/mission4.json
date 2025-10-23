@@ -1,0 +1,13 @@
+{
+  "missionId": 4,
+  "title": "The Final Transmission",
+  "description": "The last part of the alien signal tests your cosmic knowledge.",
+  "hints": [
+    "Think distance from Earth.",
+    "The Andromeda Galaxy is farthest away."
+  ],
+  "question": "Arrange in order of increasing distance from Earth: Moon, Sun, Andromeda Galaxy, Alpha Centauri",
+  "expectedAnswer": "Moon < Sun < Alpha Centauri < Andromeda Galaxy",
+  "points": 50
+}
+

@@ -1,0 +1,13 @@
+{
+  "missionId": 3,
+  "title": "Solve the Cosmic Equation",
+  "description": "The transmission reveals a physics riddle.",
+  "hints": [
+    "Use the escape velocity formula √(2GM/R).",
+    "Earth’s escape velocity is ~11.2 km/s."
+  ],
+  "question": "Which planet has an escape velocity of approximately 11.2 km/s?",
+  "expectedAnswer": "Earth",
+  "points": 40
+}
+
