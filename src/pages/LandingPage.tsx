@@ -3,11 +3,13 @@ import ScoreBoard from '../components/common/ScoreBoard'
 import Timer from '../components/common/Timer'
 import { useSession } from '../context/SessionContext'
 import { useState } from 'react'
+import Alert from '../components/common/Alert'
 
 export default function LandingPage() {
   const { session, join } = useSession()
   const [teamName, setTeamName] = useState('')
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate()
   return (
     <div className="space-y-6">
@@ -29,16 +31,18 @@ export default function LandingPage() {
             e.preventDefault()
             if (!teamName.trim()) return
             setLoading(true)
+            setError(null)
             try {
               await join(teamName.trim())
               navigate('/mission-1')
-            } catch (e) {
-              alert('Failed to join. Please try again.')
+            } catch (e: any) {
+              setError(e?.message || 'Failed to join. Please try again.')
             } finally {
               setLoading(false)
             }
           }}
         >
+          {error && <Alert variant="error" message={error} />}
           <input
             value={teamName}
             onChange={(e) => setTeamName(e.target.value)}

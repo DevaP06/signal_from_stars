@@ -8,7 +8,30 @@ import { errorHandler } from './middleware/errorHandler'
 
 const app = express()
 app.use(helmet())
-app.use(cors({ origin: env.CORS_ORIGIN }))
+
+function normalizeOrigin(o?: string | null) {
+  if (!o) return ''
+  return o.replace(/\/+$/, '')
+}
+
+const allowedOrigins = normalizeOrigin(env.CORS_ORIGIN)
+  .split(',')
+  .map((s) => normalizeOrigin(s.trim()))
+  .filter(Boolean)
+
+app.use(
+  cors({
+    origin(origin, callback) {
+      const reqOrigin = normalizeOrigin(origin || '')
+      if (!reqOrigin) return callback(null, true) // same-origin or non-browser requests
+      if (allowedOrigins.includes('*') || allowedOrigins.includes(reqOrigin)) return callback(null, true)
+      return callback(new Error('Not allowed by CORS'))
+    },
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    optionsSuccessStatus: 204,
+  })
+)
 app.use(express.json())
 app.use(morgan('dev'))
 
@@ -17,4 +40,3 @@ app.use('/api', apiRouter)
 app.use(errorHandler)
 
 export default app
-

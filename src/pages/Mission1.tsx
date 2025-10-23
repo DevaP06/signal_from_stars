@@ -5,41 +5,59 @@ import { calculatePoints, addScore } from '../utils/scoring'
 import { useGame } from '../context/GameContext'
 import { useGameProgress } from '../hooks/useGameProgress'
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useSession } from '../context/SessionContext'
 import { apiGetPuzzle, apiSubmitAnswer } from '../utils/api'
+import Alert from '../components/common/Alert'
 
 export default function Mission1() {
   const { score, setScore } = useGame()
   const { markComplete } = useGameProgress()
   const { session } = useSession()
+  const navigate = useNavigate()
   const [puzzle, setPuzzle] = useState<any>(localPuzzle)
+  const [error, setError] = useState<string | null>(null)
+  const [info, setInfo] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!session) return
-    apiGetPuzzle(session.token, 1).then(setPuzzle).catch(() => setPuzzle(localPuzzle))
+    if (!session) {
+      navigate('/')
+      return
+    }
+    apiGetPuzzle(session.token, 1)
+      .then((p) => {
+        setPuzzle(p)
+        setInfo(null)
+      })
+      .catch((e) => {
+        setPuzzle(localPuzzle)
+        setInfo('Could not load puzzle from server; showing local copy.')
+      })
   }, [session])
 
   const submit = async (value: string) => {
+    if (!session) {
+      setError('Please join the game first.')
+      navigate('/')
+      return
+    }
     try {
-      if (session) {
-        const res = await apiSubmitAnswer(session.token, 1, value)
-        setScore(res.newScore)
-        if (res.correct) markComplete(1)
-        alert(res.correct ? 'Correct!' : 'Try again.')
-        return
-      }
-    } catch {}
-    // Offline fallback scoring (uses old local logic): just acknowledge.
-    const points = calculatePoints({ correct: true, timeSeconds: 0, basePoints: localPuzzle.points })
-    setScore((s) => addScore(s, points))
-    markComplete(1)
-    alert('Answer submitted (offline mode).')
+      const res = await apiSubmitAnswer(session.token, 1, value)
+      setScore(res.newScore)
+      if (res.correct) markComplete(1)
+      setError(null)
+      setInfo(res.correct ? 'Correct! Mission unlocked.' : 'Incorrect answer. Try again.')
+    } catch (e) {
+      setError((e as Error)?.message || 'Submission failed. Please try again.')
+    }
   }
 
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-semibold">{puzzle.title ?? localPuzzle.title}</h2>
       <p className="opacity-80">{puzzle.description ?? localPuzzle.description}</p>
+      {error && <Alert variant="error" message={error} />}
+      {info && !error && <Alert variant={info.startsWith('Correct') ? 'success' : 'info'} message={info} />}
       <PuzzleCard title="Transmission">
         <p>{puzzle.question ?? localPuzzle.question}</p>
         <ul className="mt-2 list-disc list-inside text-sm opacity-80">

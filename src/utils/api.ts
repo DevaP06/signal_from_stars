@@ -9,20 +9,31 @@ function authHeaders(token?: string): Record<string, string> {
   return token ? { Authorization: `Bearer ${token}` } : {}
 }
 
+async function parseOrThrow(res: Response) {
+  const text = await res.text()
+  try {
+    const data = text ? JSON.parse(text) : {}
+    if (!res.ok) throw new Error(data.error || res.statusText)
+    return data
+  } catch (e) {
+    if (!res.ok) throw new Error(text || res.statusText)
+    // JSON parse failed but response was OK
+    return {} as any
+  }
+}
+
 export async function apiJoin(teamName: string): Promise<JoinResponse> {
   const res = await fetch(`${BASE}/api/join`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ teamName }),
   })
-  if (!res.ok) throw new Error('Join failed')
-  return res.json()
+  return parseOrThrow(res)
 }
 
 export async function apiGetPuzzle(token: string, mission: number): Promise<PuzzleResponse> {
   const res = await fetch(`${BASE}/api/puzzle/${mission}`, { headers: { ...authHeaders(token) } as HeadersInit })
-  if (!res.ok) throw new Error('Puzzle fetch failed')
-  return res.json()
+  return parseOrThrow(res)
 }
 
 export async function apiSubmitAnswer(token: string, mission: number, answer: string): Promise<AnswerResponse> {
@@ -31,12 +42,10 @@ export async function apiSubmitAnswer(token: string, mission: number, answer: st
     headers: { 'Content-Type': 'application/json', ...authHeaders(token) } as HeadersInit,
     body: JSON.stringify({ answer }),
   })
-  if (!res.ok) throw new Error('Answer submit failed')
-  return res.json()
+  return parseOrThrow(res)
 }
 
 export async function apiLeaderboard(): Promise<{ leaderboard: LeaderboardEntry[] }> {
   const res = await fetch(`${BASE}/api/leaderboard`)
-  if (!res.ok) throw new Error('Leaderboard fetch failed')
-  return res.json()
+  return parseOrThrow(res)
 }
