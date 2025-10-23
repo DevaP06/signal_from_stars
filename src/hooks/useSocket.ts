@@ -13,7 +13,7 @@ export function useSocket() {
   const [leaderboard, setLeaderboard] = useState<Leader[]>([])
   const { setScore, setProgress } = useGame()
 
-  const url = import.meta.env.VITE_WS_URL || undefined
+  const url = (import.meta.env.VITE_WS_URL || '').replace(/\/+$/, '') || undefined
 
   useEffect(() => {
     if (!session) return

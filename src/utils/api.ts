@@ -3,7 +3,7 @@ export type PuzzleResponse = { missionId: number; question: any; hint?: string; 
 export type AnswerResponse = { correct: boolean; scoreDelta: number; newScore: number; nextMissionUnlocked: boolean }
 export type LeaderboardEntry = { _id?: string; name: string; score: number; currentMission: number; finishedAt?: string }
 
-const BASE: string = import.meta.env.VITE_API_URL || ''
+const BASE: string = (import.meta.env.VITE_API_URL || '').replace(/\/+$/, '')
 
 function authHeaders(token?: string): Record<string, string> {
   return token ? { Authorization: `Bearer ${token}` } : {}
