@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import ScoreBoard from '../components/common/ScoreBoard'
 import Timer from '../components/common/Timer'
 import { useSession } from '../context/SessionContext'
+import { apiMe } from '../utils/api'
 import { useState } from 'react'
 import Alert from '../components/common/Alert'
 
@@ -33,8 +34,14 @@ export default function LandingPage() {
             setLoading(true)
             setError(null)
             try {
-              await join(teamName.trim())
-              navigate('/mission-1')
+              const s = await join(teamName.trim())
+              try {
+                const me = await apiMe(s.token)
+                const m = Math.min(Math.max(me.currentMission || 1, 1), 4)
+                navigate(`/mission-${m}`)
+              } catch {
+                navigate('/mission-1')
+              }
             } catch (e: any) {
               setError(e?.message || 'Failed to join. Please try again.')
             } finally {

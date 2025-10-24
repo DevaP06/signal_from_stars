@@ -85,9 +85,7 @@ export default function Mission1() {
       </PuzzleCard>
       <AnswerInput onSubmit={submit} placeholder="Decoded word" />
       <p className="text-sm opacity-80">Current score: {score}</p>
-      <div className="flex gap-3">
-        <Link className="text-xs opacity-70 underline" to="/mission-2">Next: Mission 2 →</Link>
-      </div>
+      {/* "Next" link is redundant due to auto‑advance; keep hidden to prevent skipping */}
       <Toast open={showBanner} message="Mission 1" variant="info" />
       <Toast open={showToast} message="Correct! Moving to Mission 2" variant="success" offsetY={40} />
       <Toast open={showErrorToast} message="Incorrect. Try again." variant="error" offsetY={80} />

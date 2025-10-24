@@ -13,10 +13,18 @@ async function parseOrThrow(res: Response) {
   const text = await res.text()
   try {
     const data = text ? JSON.parse(text) : {}
-    if (!res.ok) throw new Error(data.error || res.statusText)
+    if (!res.ok) {
+      const err = new Error(data.error || res.statusText)
+      ;(err as any).status = res.status
+      throw err
+    }
     return data
   } catch (e) {
-    if (!res.ok) throw new Error(text || res.statusText)
+    if (!res.ok) {
+      const err = new Error(text || res.statusText)
+      ;(err as any).status = res.status
+      throw err
+    }
     // JSON parse failed but response was OK
     return {} as any
   }
@@ -47,5 +55,10 @@ export async function apiSubmitAnswer(token: string, mission: number, answer: st
 
 export async function apiLeaderboard(): Promise<{ leaderboard: LeaderboardEntry[] }> {
   const res = await fetch(`${BASE}/api/leaderboard`)
+  return parseOrThrow(res)
+}
+
+export async function apiMe(token: string): Promise<{ teamId: string; name: string; score: number; currentMission: number; finishedAt?: string | null }> {
+  const res = await fetch(`${BASE}/api/me`, { headers: { ...authHeaders(token) } as HeadersInit })
   return parseOrThrow(res)
 }

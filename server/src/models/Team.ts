@@ -12,6 +12,8 @@ const TeamSchema = new Schema(
   { timestamps: true }
 )
 
+// Ensure team names are unique within a game
+TeamSchema.index({ gameId: 1, name: 1 }, { unique: true })
+
 export type Team = InferSchemaType<typeof TeamSchema>
 export const TeamModel = model('Team', TeamSchema)
-

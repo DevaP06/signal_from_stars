@@ -16,3 +16,10 @@ export async function getLeaderboard(gameId: string) {
   return TeamModel.find({ gameId }).sort({ score: -1, updatedAt: 1 }).select('name score currentMission finishedAt')
 }
 
+export async function getTeamByName(gameId: string, name: string) {
+  return TeamModel.findOne({ gameId, name })
+}
+
+export async function setTeamTokenId(teamId: string, tokenId: string) {
+  return TeamModel.findByIdAndUpdate(teamId, { tokenId }, { new: true })
+}

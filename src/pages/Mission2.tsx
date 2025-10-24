@@ -24,6 +24,7 @@ export default function Mission2() {
   const [showToast, setShowToast] = useState(false)
   const [showErrorToast, setShowErrorToast] = useState(false)
   const [showBanner, setShowBanner] = useState(true)
+  const [locked, setLocked] = useState(false)
 
   useEffect(() => {
     if (!session) {
@@ -36,9 +37,14 @@ export default function Mission2() {
         setPuzzle(p)
         setInfo(null)
       })
-      .catch(() => {
-        setPuzzle(localPuzzle)
-        setInfo('Could not load puzzle from server; showing local copy.')
+      .catch((e: any) => {
+        if (e?.status === 403) {
+          setLocked(true)
+          setError('Mission locked. Complete previous mission first.')
+        } else {
+          setPuzzle(localPuzzle)
+          setInfo('Could not load puzzle from server; showing local copy.')
+        }
       })
     return () => clearTimeout(timer)
   }, [session])
@@ -77,19 +83,22 @@ export default function Mission2() {
       <p className="opacity-80">{puzzle.description ?? localPuzzle.description}</p>
       {error && <Alert variant="error" message={error} />}
       {info && !error && <Alert variant={info.startsWith('Correct') ? 'success' : 'info'} message={info} />}
-      <PuzzleCard title="Transmission">
-        <p className="font-mono whitespace-pre-wrap">{puzzle.question ?? localPuzzle.question}</p>
-        <ul className="mt-2 list-disc list-inside text-sm opacity-80">
-          {(puzzle.hints ?? localPuzzle.hints).map((h: string, i: number) => (
-            <li key={i}>{h}</li>
-          ))}
-        </ul>
-      </PuzzleCard>
-      <AnswerInput onSubmit={submit} placeholder="Decoded sentence" />
+      {!locked && (
+        <>
+          <PuzzleCard title="Transmission">
+            <p className="font-mono whitespace-pre-wrap">{puzzle.question ?? localPuzzle.question}</p>
+            <ul className="mt-2 list-disc list-inside text-sm opacity-80">
+              {(puzzle.hints ?? localPuzzle.hints).map((h: string, i: number) => (
+                <li key={i}>{h}</li>
+              ))}
+            </ul>
+          </PuzzleCard>
+          <AnswerInput onSubmit={submit} placeholder="Decoded sentence" />
+        </>
+      )}
       <p className="text-sm opacity-80">Current score: {score}</p>
-      <div className="flex gap-3">
-        <Link className="text-xs opacity-70 underline" to="/mission-3">Next: Mission 3 →</Link>
-      </div>
+      {/* Only show manual next link if already unlocked via client progress */}
+      {/* No manual next link; auto‑advance on correct */}
       <Toast open={showBanner} message="Mission 2" variant="info" />
       <Toast open={showToast} message="Correct! Moving to Mission 3" variant="success" offsetY={40} />
       <Toast open={showErrorToast} message="Incorrect. Try again." variant="error" offsetY={80} />

@@ -10,7 +10,7 @@ type Session = {
 
 type SessionContextValue = {
   session: Session | null
-  join: (teamName: string) => Promise<void>
+  join: (teamName: string) => Promise<Session>
   clear: () => void
 }
 
@@ -48,6 +48,7 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const s: Session = { teamId: res.teamId, token: res.token, gameId: res.gameId, teamName }
     setSession(s)
     persist(s)
+    return s
   }, [])
 
   const clear = useCallback(() => {
