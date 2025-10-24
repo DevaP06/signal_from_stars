@@ -9,6 +9,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useSession } from '../context/SessionContext'
 import { apiGetPuzzle, apiSubmitAnswer } from '../utils/api'
 import Alert from '../components/common/Alert'
+import Toast from '../components/common/Toast'
 
 // (no local transform needed; backend validates answer)
 
@@ -20,12 +21,16 @@ export default function Mission2() {
   const [puzzle, setPuzzle] = useState<any>(localPuzzle)
   const [error, setError] = useState<string | null>(null)
   const [info, setInfo] = useState<string | null>(null)
+  const [showToast, setShowToast] = useState(false)
+  const [showErrorToast, setShowErrorToast] = useState(false)
+  const [showBanner, setShowBanner] = useState(true)
 
   useEffect(() => {
     if (!session) {
       navigate('/')
       return
     }
+    const timer = setTimeout(() => setShowBanner(false), 1200)
     apiGetPuzzle(session.token, 2)
       .then((p) => {
         setPuzzle(p)
@@ -35,6 +40,7 @@ export default function Mission2() {
         setPuzzle(localPuzzle)
         setInfo('Could not load puzzle from server; showing local copy.')
       })
+    return () => clearTimeout(timer)
   }, [session])
 
   const submit = async (value: string) => {
@@ -49,6 +55,17 @@ export default function Mission2() {
       if (res.correct) markComplete(2)
       setError(null)
       setInfo(res.correct ? 'Correct! Mission unlocked.' : 'Incorrect answer. Try again.')
+      if (!res.correct) {
+        setShowErrorToast(true)
+        setTimeout(() => setShowErrorToast(false), 1200)
+      }
+      if (res.correct && res.nextMissionUnlocked) {
+        setShowToast(true)
+        setTimeout(() => {
+          setShowToast(false)
+          navigate('/mission-3')
+        }, 900)
+      }
     } catch (e) {
       setError((e as Error)?.message || 'Submission failed. Please try again.')
     }
@@ -73,6 +90,9 @@ export default function Mission2() {
       <div className="flex gap-3">
         <Link className="text-xs opacity-70 underline" to="/mission-3">Next: Mission 3 →</Link>
       </div>
+      <Toast open={showBanner} message="Mission 2" variant="info" />
+      <Toast open={showToast} message="Correct! Moving to Mission 3" variant="success" offsetY={40} />
+      <Toast open={showErrorToast} message="Incorrect. Try again." variant="error" offsetY={80} />
     </div>
   )
 }
