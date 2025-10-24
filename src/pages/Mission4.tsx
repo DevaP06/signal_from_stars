@@ -9,7 +9,6 @@ import { useSession } from '../context/SessionContext'
 import { apiGetPuzzle, apiSubmitAnswer } from '../utils/api'
 import Alert from '../components/common/Alert'
 import Toast from '../components/common/Toast'
-import { useEffect } from 'react'
 
 export default function Mission4() {
   const { score, setScore } = useGame()
