@@ -5,7 +5,7 @@ import { calculatePoints, addScore } from '../utils/scoring'
 import { useGame } from '../context/GameContext'
 import { useGameProgress } from '../hooks/useGameProgress'
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useSession } from '../context/SessionContext'
 import { apiGetPuzzle, apiSubmitAnswer } from '../utils/api'
 import Alert from '../components/common/Alert'
@@ -71,7 +71,7 @@ export default function Mission2() {
       <AnswerInput onSubmit={submit} placeholder="Decoded sentence" />
       <p className="text-sm opacity-80">Current score: {score}</p>
       <div className="flex gap-3">
-        <a className="text-xs opacity-70 underline" href="/mission-3">Next: Mission 3 →</a>
+        <Link className="text-xs opacity-70 underline" to="/mission-3">Next: Mission 3 →</Link>
       </div>
     </div>
   )
