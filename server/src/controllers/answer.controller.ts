@@ -37,13 +37,13 @@ export async function submitAnswer(req: Request, res: Response) {
   if (correct) {
     newScore = (team.score ?? 0) + scoreDelta
     const nextMission = (team.currentMission ?? 1) + 1
-    const finishedAt = nextMission > 3 ? new Date() : null
+    const finishedAt = nextMission > 4 ? new Date() : null
     await updateTeamProgress(team.id, {
       score: newScore,
-      currentMission: Math.min(nextMission, 3),
+      currentMission: Math.min(nextMission, 4),
       finishedAt,
     })
-    nextMissionUnlocked = nextMission <= 3
+    nextMissionUnlocked = nextMission <= 4
   }
 
   return res.json({ correct, scoreDelta, newScore, nextMissionUnlocked })
